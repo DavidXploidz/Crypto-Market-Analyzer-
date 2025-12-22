@@ -9,6 +9,7 @@ export const useTicker24hr = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(20);
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | "">("");
 
   useEffect(() => {
     getTicker24hr()
@@ -18,7 +19,9 @@ export const useTicker24hr = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const [customFilter, setCustomFilter] = useState<((item: any) => boolean) | null>(null);
+  const [customFilter, setCustomFilter] = useState<
+    ((item: any) => boolean) | null
+  >(null);
 
   useEffect(() => {
     // Filter data first
@@ -33,6 +36,15 @@ export const useTicker24hr = () => {
       filteredData = filteredData.filter(customFilter);
     }
 
+    // Then sort
+    if (sortOrder) {
+      filteredData.sort((a, b) => {
+        const priceA = parseFloat(a.lastPrice);
+        const priceB = parseFloat(b.lastPrice);
+        return sortOrder === "asc" ? priceA - priceB : priceB - priceA;
+      });
+    }
+
     // Then paginate
     if (filteredData.length > 0) {
       const startIndex = (currentPage - 1) * itemsPerPage;
@@ -41,7 +53,7 @@ export const useTicker24hr = () => {
     } else {
       setTicker([]);
     }
-  }, [data, currentPage, itemsPerPage, searchTerm, customFilter]);
+  }, [data, currentPage, itemsPerPage, searchTerm, customFilter, sortOrder]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -91,5 +103,7 @@ export const useTicker24hr = () => {
     handlePageChange,
     handleSearch,
     setCustomFilter,
+    sortOrder,
+    setSortOrder,
   };
 };

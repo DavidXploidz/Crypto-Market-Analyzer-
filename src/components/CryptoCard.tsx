@@ -1,7 +1,6 @@
-import { FaBitcoin } from "react-icons/fa";
 import type { CryptoCardProps } from "../types/crypto.types";
-import { IoArrowUpOutline, IoArrowDownOutline } from "react-icons/io5";
-import { IoStar, IoStarOutline } from "react-icons/io5";
+import { IoArrowUpOutline, IoArrowDownOutline, IoStar, IoStarOutline } from "react-icons/io5";
+import { FaMicrochip } from "react-icons/fa6";
 
 export default function CryptoCard({ ticker, isFavorite, onToggleFavorite }: CryptoCardProps) {
     if (!ticker) return <div className='bg-primary border border-slate-800 text-light min-h-40 rounded-2xl p-2 md:p-3 lg:p-4 space-y-4 animate-pulse'></div>
@@ -10,7 +9,9 @@ export default function CryptoCard({ ticker, isFavorite, onToggleFavorite }: Cry
         <div className='bg-primary border border-slate-800 text-light min-h-40 rounded-2xl p-2 md:p-3 lg:p-4 space-y-4 hover:border-slate-600 transition-colors'>
             <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-x-2'>
-                    <FaBitcoin className='flex-none size-12 text-yellow-500' />
+                    <div className="w-10 h-10 grid place-items-center bg-accent/70 rounded-full">
+                        <FaMicrochip className='size-5' />
+                    </div>
                     <p className='font-semibold font-inter text-lg'>{ticker.symbol}</p>
                 </div>
                 <div>
@@ -22,7 +23,7 @@ export default function CryptoCard({ ticker, isFavorite, onToggleFavorite }: Cry
                     }
                 </div>
             </div>
-            <p className="text-3xl font-bold font-roboto">${parseFloat(ticker.lastPrice).toLocaleString()}</p>
+            <p className="text-3xl xl:text-4xl font-bold font-roboto">${parseFloat(ticker.lastPrice).toLocaleString()}</p>
             <div className="flex items-center justify-between gap-x-2 font-roboto">
                 <p className={parseFloat(ticker.priceChangePercent) >= 0 ? "text-green-500" : "text-red-500"}>
                     {parseFloat(ticker.priceChangePercent) >= 0 ? (
