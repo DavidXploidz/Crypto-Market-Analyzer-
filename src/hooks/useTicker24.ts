@@ -8,6 +8,7 @@ export const useTicker24hr = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(20);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     getTicker24hr()
@@ -18,26 +19,49 @@ export const useTicker24hr = () => {
   }, []);
 
   useEffect(() => {
-    if (data.length > 0) {
+    // Filter data first
+    let filteredData = data;
+    if (searchTerm) {
+      filteredData = data.filter((item) =>
+        item.symbol.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Then paginate
+    if (filteredData.length > 0) {
       const startIndex = (currentPage - 1) * itemsPerPage;
       const endIndex = startIndex + itemsPerPage;
-      setTicker(data.slice(startIndex, endIndex));
+      setTicker(filteredData.slice(startIndex, endIndex));
+    } else {
+      setTicker([]);
     }
-  }, [data, currentPage, itemsPerPage]);
+  }, [data, currentPage, itemsPerPage, searchTerm]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const pagination: Pagination = {
-    total: data.length,
-    per_page: itemsPerPage,
-    current_page: currentPage,
-    last_page: Math.ceil(data.length / itemsPerPage),
-    from: (currentPage - 1) * itemsPerPage + 1,
-    to: Math.min(currentPage * itemsPerPage, data.length),
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    setCurrentPage(1);
   };
 
-  return { ticker, loading, pagination, handlePageChange };
+  // Calculate pagination based on filtered data count
+  const filteredCount = searchTerm
+    ? data.filter((item) =>
+        item.symbol.toLowerCase().includes(searchTerm.toLowerCase())
+      ).length
+    : data.length;
+
+  const pagination: Pagination = {
+    total: filteredCount,
+    per_page: itemsPerPage,
+    current_page: currentPage,
+    last_page: Math.ceil(filteredCount / itemsPerPage),
+    from: (currentPage - 1) * itemsPerPage + 1,
+    to: Math.min(currentPage * itemsPerPage, filteredCount),
+  };
+
+  return { ticker, loading, pagination, handlePageChange, handleSearch };
 };
