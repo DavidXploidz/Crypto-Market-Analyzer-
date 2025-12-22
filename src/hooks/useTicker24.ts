@@ -18,6 +18,8 @@ export const useTicker24hr = () => {
       .finally(() => setLoading(false));
   }, []);
 
+  const [customFilter, setCustomFilter] = useState<((item: any) => boolean) | null>(null);
+
   useEffect(() => {
     // Filter data first
     let filteredData = data;
@@ -25,6 +27,10 @@ export const useTicker24hr = () => {
       filteredData = data.filter((item) =>
         item.symbol.toLowerCase().includes(searchTerm.toLowerCase())
       );
+    }
+
+    if (customFilter) {
+      filteredData = filteredData.filter(customFilter);
     }
 
     // Then paginate
@@ -35,7 +41,7 @@ export const useTicker24hr = () => {
     } else {
       setTicker([]);
     }
-  }, [data, currentPage, itemsPerPage, searchTerm]);
+  }, [data, currentPage, itemsPerPage, searchTerm, customFilter]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -48,11 +54,26 @@ export const useTicker24hr = () => {
   };
 
   // Calculate pagination based on filtered data count
-  const filteredCount = searchTerm
-    ? data.filter((item) =>
+  let filteredCount = data.length;
+
+  if (searchTerm) {
+    filteredCount = data.filter((item) =>
+      item.symbol.toLowerCase().includes(searchTerm.toLowerCase())
+    ).length;
+  }
+
+  if (customFilter) {
+    // If we have a custom filter, we need to calculate count based on that too.
+    // Ideally we chain filters.
+    let tempFiltered = data;
+    if (searchTerm) {
+      tempFiltered = tempFiltered.filter((item) =>
         item.symbol.toLowerCase().includes(searchTerm.toLowerCase())
-      ).length
-    : data.length;
+      );
+    }
+    tempFiltered = tempFiltered.filter(customFilter);
+    filteredCount = tempFiltered.length;
+  }
 
   const pagination: Pagination = {
     total: filteredCount,
@@ -63,5 +84,12 @@ export const useTicker24hr = () => {
     to: Math.min(currentPage * itemsPerPage, filteredCount),
   };
 
-  return { ticker, loading, pagination, handlePageChange, handleSearch };
+  return {
+    ticker,
+    loading,
+    pagination,
+    handlePageChange,
+    handleSearch,
+    setCustomFilter,
+  };
 };
