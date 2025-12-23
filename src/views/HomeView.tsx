@@ -51,7 +51,7 @@ export default function HomeView() {
                             value={sortOrder}
                             onChange={(e) => setSortOrder(e.target.value as "asc" | "desc" | "")}
                         >
-                            <option value="" disabled selected>Sort by Price</option>
+                            <option value="" disabled defaultValue={''}>Sort by Price</option>
                             <option value="desc">Price: High to Low</option>
                             <option value="asc">Price: Low to High</option>
                         </select>
