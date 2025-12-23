@@ -108,8 +108,9 @@ export default function HomeView() {
                     <h2 className="text-light text-3xl lg:text-4xl font-bold font-space">Trending Assets</h2>
                     <div className="flex flex-col md:flex-row md:items-center gap-y-4 gap-x-2">
                         <select
-                            name=""
-                            id=""
+                            aria-label="Filter by"
+                            name="filter"
+                            id="filter"
                             className="bg-primary text-light min-h-14 p-2 rounded-xl border border-slate-800"
                             value={filterMode}
                             onChange={(e) => setFilterMode(e.target.value)}
@@ -118,6 +119,9 @@ export default function HomeView() {
                             <option value="My Favorites">My Favorites</option>
                         </select>
                         <select
+                            aria-label="Sort by Price"
+                            name="sort"
+                            id="sort"
                             className="bg-primary text-light min-h-14 p-2 rounded-xl border border-slate-800"
                             value={sortOrder}
                             onChange={(e) => setSortOrder(e.target.value as "asc" | "desc" | "")}
@@ -128,6 +132,9 @@ export default function HomeView() {
                         </select>
                         <div className="flex items-center justify-between bg-primary p-2 rounded-xl border border-slate-800">
                             <input
+                                aria-label="Search"
+                                name="search"
+                                id="search"
                                 type="text"
                                 placeholder="Search"
                                 className="w-full p-2 bg-transparent text-light outline-none"
@@ -137,14 +144,14 @@ export default function HomeView() {
                             />
                             {inputValue && (
                                 <button className="p-2 rounded-xl text-light hover:cursor-pointer" onClick={() => setInputValue("")}>
-                                    <IoCloseOutline className="size-6" />
+                                    <IoCloseOutline aria-label="Close" className="size-6" />
                                 </button>
                             )}
                             <button
                                 className="bg-accent hover:bg-accent/90 p-2 rounded-xl text-light hover:cursor-pointer"
                                 onClick={onSearch}
                             >
-                                <IoSearchOutline className="size-6" />
+                                <IoSearchOutline aria-label="Search" className="size-6" />
                             </button>
                         </div>
                     </div>
