@@ -1,8 +1,9 @@
 import type { CryptoCardProps } from "../types/crypto.types";
 import { IoArrowUpOutline, IoArrowDownOutline, IoStar, IoStarOutline } from "react-icons/io5";
 import { FaMicrochip } from "react-icons/fa6";
+import { LuChartNoAxesCombined } from "react-icons/lu";
 
-export default function CryptoCard({ ticker, isFavorite, onToggleFavorite }: CryptoCardProps) {
+export default function CryptoCard({ ticker, isFavorite, onToggleFavorite, openChartDetail }: CryptoCardProps) {
     if (!ticker) return <div className='bg-primary border border-slate-800 text-light min-h-40 rounded-2xl p-2 md:p-3 lg:p-4 space-y-4 animate-pulse'></div>
 
     return (
@@ -14,12 +15,13 @@ export default function CryptoCard({ ticker, isFavorite, onToggleFavorite }: Cry
                     </div>
                     <p className='font-semibold font-inter text-lg'>{ticker.symbol}</p>
                 </div>
-                <div>
+                <div className="flex items-center gap-x-2">
+                    <LuChartNoAxesCombined onClick={() => openChartDetail && openChartDetail(ticker.symbol)} className="size-6 cursor-pointer transition-all hover:scale-125" />
                     {isFavorite
                         ?
-                        <IoStar onClick={() => onToggleFavorite && onToggleFavorite(ticker.symbol)} className="size-6 cursor-pointer transition-colors text-yellow-400 fill-yellow-400" />
+                        <IoStar onClick={() => onToggleFavorite && onToggleFavorite(ticker.symbol)} className="hover:scale-125 size-6 cursor-pointer transition-all text-yellow-400 fill-yellow-400" />
                         :
-                        <IoStarOutline onClick={() => onToggleFavorite && onToggleFavorite(ticker.symbol)} className="size-6 cursor-pointer transition-colors hover:text-yellow-400" />
+                        <IoStarOutline onClick={() => onToggleFavorite && onToggleFavorite(ticker.symbol)} className="hover:scale-125 size-6 cursor-pointer transition-all hover:text-yellow-400" />
                     }
                 </div>
             </div>

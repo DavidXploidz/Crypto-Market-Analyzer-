@@ -1,9 +1,11 @@
 import { useTicker24hr } from "../hooks/useTicker24"
 import CryptoCard from "../components/CryptoCard"
 import Pagination from "../components/Pagination"
-import { IoCloseOutline, IoSearchOutline } from "react-icons/io5";
+import { IoCloseOutline, IoSearchOutline, IoClose } from "react-icons/io5";
 import { useState, useEffect } from "react";
 import { useFavorites } from "../hooks/useFavorites";
+import { getKlines } from "../services/klines.service";
+import HistoryChart from "../components/HistoryChart";
 
 export default function HomeView() {
     const { ticker, loading: loadingTicker, pagination, handlePageChange, handleSearch, setCustomFilter, sortOrder, setSortOrder } = useTicker24hr()
@@ -11,6 +13,10 @@ export default function HomeView() {
     const [inputValue, setInputValue] = useState("")
     const [filterMode, setFilterMode] = useState("")
     const { favorites, toggleFavorite, isFavorite } = useFavorites();
+    const [openChartModal, setOpenChartModal] = useState(false);
+    const [chartData, setChartData] = useState<any[]>([]);
+    const [loadingChart, setLoadingChart] = useState(false);
+    const [selectedSymbol, setSelectedSymbol] = useState("");
 
     useEffect(() => {
         if (filterMode === "My Favorites") {
@@ -30,8 +36,57 @@ export default function HomeView() {
         }
     }
 
+    const openChartDetail = async (symbol: string) => {
+        setOpenChartModal(true)
+        setSelectedSymbol(symbol)
+        setLoadingChart(true)
+        try {
+            const data = await getKlines(symbol)
+            const formattedData = data.map((item: any) => ({
+                time: new Date(item[0]).toLocaleDateString(),
+                price: parseFloat(item[4])
+            }))
+            setChartData(formattedData)
+        } catch (error) {
+            console.error("Error fetching klines", error)
+        } finally {
+            setLoadingChart(false)
+        }
+    }
+
     return (
         <div className="min-h-dvh bg-dark">
+            <div className={`glass-effect fixed top-0 left-0 w-full h-full z-40 transition-all opacity-0 invisible ${openChartModal && "opacity-100 visible"}`}></div>
+            <div
+                className={`fixed top-0 left-0 w-full md:w-1/2 -translate-x-1/2 h-full bg-black/90 z-50 opacity-0 transition-all 
+                ${openChartModal && "translate-x-0 opacity-100"}`}
+            >
+                <button className="absolute top-4 right-4 z-50" onClick={() => setOpenChartModal(false)}>
+                    <IoClose className="size-10 flex-none text-light hover:cursor-pointer" />
+                </button>
+                <div className="p-3 md:p-4 lg:p-6 w-full h-full flex flex-col">
+                    <h3 className="text-light text-3xl lg:text-4xl font-bold font-space text-center mb-6">
+                        {selectedSymbol} Chart History
+                    </h3>
+                    <span className="text-light text-xl text-center mb-5">(1h)</span>
+
+                    {loadingChart ? (
+                        <div className="flex-1 grid place-items-center">
+                            <div className="size-12 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+                        </div>
+                    ) : (
+                        <div className="flex-1 w-full bg-slate-900 rounded-xl p-4 overflow-hidden relative">
+                            {chartData.length > 0 ? (
+                                <HistoryChart data={chartData} />
+                            ) : (
+                                <p className="text-slate-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                                    No data available
+                                </p>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
             <div className="container mx-auto px-3 md:px-4 lg:px-6 py-10 min-h-full">
                 <div className="flex flex-col md:flex-row gap-y-3 md:items-center justify-between mb-10">
                     <h2 className="text-light text-3xl lg:text-4xl font-bold font-space">Trending Assets</h2>
@@ -91,6 +146,7 @@ export default function HomeView() {
                                     ticker={item}
                                     isFavorite={isFavorite(item.symbol)}
                                     onToggleFavorite={toggleFavorite}
+                                    openChartDetail={openChartDetail}
                                 />
                             ))}
                         </section>

@@ -7,4 +7,5 @@ export interface CryptoCardProps {
   };
   isFavorite?: boolean;
   onToggleFavorite?: (symbol: string) => void;
+  openChartDetail?: (symbol: string) => void;
 }
