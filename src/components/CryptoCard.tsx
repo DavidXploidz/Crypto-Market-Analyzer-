@@ -1,4 +1,5 @@
 import type { CryptoCardProps } from "../types/crypto.types";
+import { motion } from "framer-motion";
 import { IoArrowUpOutline, IoArrowDownOutline, IoStar, IoStarOutline } from "react-icons/io5";
 import { FaMicrochip } from "react-icons/fa6";
 import { LuChartNoAxesCombined } from "react-icons/lu";
@@ -7,7 +8,15 @@ export default function CryptoCard({ ticker, isFavorite, onToggleFavorite, openC
     if (!ticker) return <div className='bg-primary border border-slate-800 text-light min-h-40 rounded-2xl p-2 md:p-3 lg:p-4 space-y-4 animate-pulse'></div>
 
     return (
-        <div className='bg-primary border border-slate-800 text-light min-h-40 rounded-2xl p-2 md:p-3 lg:p-4 space-y-4 hover:border-slate-600 transition-colors'>
+
+        <motion.div
+            layout
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+            className='bg-primary border border-slate-800 text-light min-h-40 rounded-2xl p-2 md:p-3 lg:p-4 space-y-4 hover:border-slate-600 transition-colors'
+        >
             <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-x-2'>
                     <div className="w-10 h-10 grid place-items-center bg-accent/70 rounded-full">
@@ -37,6 +46,7 @@ export default function CryptoCard({ ticker, isFavorite, onToggleFavorite, openC
                 </p>
                 <p className="text-slate-500">Vol. {parseFloat(ticker.quoteVolume).toFixed(2)}</p>
             </div>
-        </div>
+        </motion.div>
     )
+
 }
